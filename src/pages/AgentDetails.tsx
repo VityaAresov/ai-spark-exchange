@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Flag, Users, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { agents } from '@/data/mockData';
 import { toast } from '@/hooks/use-toast';
 
@@ -51,6 +51,18 @@ const AgentDetails = () => {
     });
   };
 
+  const handleFlag = () => {
+    toast({
+      title: "Report Submitted",
+      description: "Thank you for reporting this agent. Our moderation team will review it within 24 hours.",
+    });
+  };
+
+  // Mock public stats
+  const weeklyUsers = Math.floor(Math.random() * 2000) + 500;
+  const monthlyEarnings = Math.floor(Math.random() * 5000) + 1000;
+  const satisfactionRate = (Math.random() * 20 + 80).toFixed(1);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -69,9 +81,20 @@ const AgentDetails = () => {
                     <CardTitle className="text-2xl">{agent.name}</CardTitle>
                     <CardDescription className="text-lg mt-2">{agent.description}</CardDescription>
                   </div>
-                  <Badge variant="secondary" className="text-lg px-3 py-1">
-                    {agent.price}
-                  </Badge>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge variant="secondary" className="text-lg px-3 py-1">
+                      {agent.price}
+                    </Badge>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleFlag}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Flag className="w-4 h-4 mr-1" />
+                      Flag
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Badge>{agent.category}</Badge>
@@ -87,10 +110,12 @@ const AgentDetails = () => {
             </Card>
 
             <Tabs defaultValue="description" className="mt-6">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="description">Description</TabsTrigger>
+                <TabsTrigger value="stats">Public Stats</TabsTrigger>
                 <TabsTrigger value="documentation">Documentation</TabsTrigger>
               </TabsList>
+              
               <TabsContent value="description" className="mt-4">
                 <Card>
                   <CardContent className="pt-6">
@@ -113,6 +138,53 @@ const AgentDetails = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              <TabsContent value="stats" className="mt-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="text-center p-4 bg-blue-50 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <Users className="h-5 w-5 text-blue-600 mr-2" />
+                          <span className="text-sm font-medium text-blue-600">Weekly Users</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">{weeklyUsers.toLocaleString()}+</div>
+                      </div>
+                      <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                          <span className="text-sm font-medium text-green-600">Developer Earnings</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">${monthlyEarnings.toLocaleString()}/month</div>
+                      </div>
+                      <div className="text-center p-4 bg-purple-50 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <TrendingUp className="h-5 w-5 text-purple-600 mr-2" />
+                          <span className="text-sm font-medium text-purple-600">Growth Rate</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">+25%</div>
+                      </div>
+                      <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                        <div className="flex items-center justify-center mb-2">
+                          <Star className="h-5 w-5 text-yellow-600 mr-2" />
+                          <span className="text-sm font-medium text-yellow-600">Satisfaction</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">{satisfactionRate}%</div>
+                      </div>
+                    </div>
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-semibold mb-2">Usage Insights</h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Peak usage hours: 9 AM - 5 PM EST</li>
+                        <li>• Most popular features: Text analysis, Grammar correction</li>
+                        <li>• Average session length: 12 minutes</li>
+                        <li>• Customer retention rate: 89%</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
               <TabsContent value="documentation" className="mt-4">
                 <Card>
                   <CardContent className="pt-6">

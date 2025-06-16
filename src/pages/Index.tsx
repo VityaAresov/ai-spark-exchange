@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, TrendingUp, Star, Users } from 'lucide-react';
 import AgentCard from '@/components/AgentCard';
 import Header from '@/components/Header';
 import { agents } from '@/data/mockData';
@@ -15,6 +16,22 @@ const Index = () => {
   const [priceFilter, setPriceFilter] = useState('all');
 
   const categories = ['all', 'writing', 'analytics', 'content', 'productivity', 'customer-service'];
+
+  // Mock trending agents (sorted by recent sales growth)
+  const trendingAgents = useMemo(() => {
+    return [...agents]
+      .sort((a, b) => b.purchases - a.purchases)
+      .slice(0, 6);
+  }, []);
+
+  // Mock personalized recommendations (based on mock user purchase history)
+  const recommendedAgents = useMemo(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.email) return agents.slice(0, 3);
+    
+    // Simple recommendation based on category preferences
+    return agents.filter(agent => agent.category === 'writing' || agent.category === 'content').slice(0, 3);
+  }, []);
 
   const filteredAgents = useMemo(() => {
     return agents.filter(agent => {
@@ -64,7 +81,44 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Filters Section */}
+      {/* Trending Agents Section */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-3 mb-8">
+            <TrendingUp className="h-6 w-6 text-blue-600" />
+            <h2 className="text-3xl font-bold text-gray-900">Top 10 Agents This Month</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trendingAgents.map((agent, index) => (
+              <div key={agent.id} className="relative">
+                {index < 3 && (
+                  <Badge className="absolute -top-2 -right-2 z-10 bg-yellow-500 text-yellow-900">
+                    #{index + 1}
+                  </Badge>
+                )}
+                <AgentCard agent={agent} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Personalized Recommendations */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-3 mb-8">
+            <Star className="h-6 w-6 text-blue-600" />
+            <h2 className="text-3xl font-bold text-gray-900">Recommended for You</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recommendedAgents.map((agent) => (
+              <AgentCard key={agent.id} agent={agent} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Filters Section */}
       <section className="py-6 bg-white border-b">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap gap-4 items-center justify-between">
@@ -99,6 +153,17 @@ const Index = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">For Creators</label>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedCategory('content')}
+                  className="w-48"
+                >
+                  Content Creator Tools
+                </Button>
+              </div>
             </div>
             
             <div className="flex items-center gap-2">
@@ -123,9 +188,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Agent Grid */}
+      {/* Main Agent Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">All AI Agents</h2>
           {filteredAgents.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No agents found</h3>
@@ -159,6 +225,26 @@ const Index = () => {
                 </Badge>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Platform Stats */}
+      <section className="py-12 bg-gray-900 text-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-blue-400 mb-2">5,000+</div>
+              <div className="text-gray-300">Active Users</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-blue-400 mb-2">1,200+</div>
+              <div className="text-gray-300">AI Agents</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-blue-400 mb-2">$2.5M+</div>
+              <div className="text-gray-300">Developer Earnings</div>
+            </div>
           </div>
         </div>
       </section>
