@@ -4,6 +4,7 @@ export const agents = [
     id: '1',
     name: 'Content Creator Pro',
     description: 'AI-powered tool for generating blog posts, social media content, and marketing copy. Includes SEO optimization and brand voice customization.',
+    fullDescription: 'Content Creator Pro is a comprehensive AI-powered content generation platform designed for marketers, bloggers, and content creators. It combines advanced natural language processing with SEO optimization to help you create engaging, search-friendly content that resonates with your audience.',
     price: '$29/month',
     category: 'content',
     views: 2341,
@@ -13,12 +14,16 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=225',
     hasFreeTrial: true,
     integrations: ['API', 'Webhooks', 'Zapier'],
-    isReadyToLaunch: true
+    isReadyToLaunch: true,
+    demoMessage: 'Write a blog post about sustainable living',
+    sampleResponse: 'Here\'s a comprehensive blog post about sustainable living that covers eco-friendly practices, renewable energy, and waste reduction strategies...',
+    features: ['AI Content Generation', 'SEO Optimization', 'Multi-format Support', 'Brand Voice Customization']
   },
   {
     id: '2',
     name: 'Data Analytics Bot',
     description: 'Advanced analytics agent that processes CSV files, generates reports, and creates visualizations automatically.',
+    fullDescription: 'Data Analytics Bot transforms raw data into actionable insights through automated analysis, visualization, and reporting. Perfect for businesses looking to make data-driven decisions without requiring technical expertise.',
     price: '$45/month',
     category: 'analytics',
     views: 1876,
@@ -28,12 +33,16 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225',
     hasFreeTrial: true,
     integrations: ['API', 'Webhooks'],
-    isReadyToLaunch: true
+    isReadyToLaunch: true,
+    demoMessage: 'Analyze sales data for trends',
+    sampleResponse: 'Based on your sales data, I\'ve identified a 23% increase in revenue during Q3, with the highest performing product categories being...',
+    features: ['CSV Processing', 'Automated Reports', 'Data Visualization', 'Trend Analysis']
   },
   {
     id: '3',
     name: 'Customer Support Assistant',
     description: 'Intelligent chatbot for handling customer inquiries, ticket routing, and automated responses.',
+    fullDescription: 'Customer Support Assistant provides 24/7 automated customer service with intelligent ticket routing, sentiment analysis, and personalized responses. Reduce support costs while improving customer satisfaction.',
     price: '$19/month',
     category: 'customer-service',
     views: 3421,
@@ -43,12 +52,16 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=225',
     hasFreeTrial: true,
     integrations: ['API', 'Slack', 'Discord', 'Email'],
-    isReadyToLaunch: true
+    isReadyToLaunch: true,
+    demoMessage: 'I need help with my order',
+    sampleResponse: 'I\'d be happy to help you with your order! Could you please provide your order number so I can look up the details and assist you better?',
+    features: ['24/7 Support', 'Ticket Routing', 'Multi-channel Integration', 'Sentiment Analysis']
   },
   {
     id: '4',
     name: 'Code Review Helper',
     description: 'Automated code analysis tool that identifies bugs, suggests improvements, and enforces coding standards.',
+    fullDescription: 'Code Review Helper streamlines the development process by automatically analyzing code quality, identifying potential bugs, and suggesting improvements based on industry best practices and coding standards.',
     price: '$35/month',
     category: 'productivity',
     views: 1234,
@@ -58,12 +71,16 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=225',
     hasFreeTrial: false,
     integrations: ['API', 'Webhooks', 'Slack'],
-    isReadyToLaunch: false
+    isReadyToLaunch: false,
+    demoMessage: 'Review this JavaScript function',
+    sampleResponse: 'I\'ve analyzed your code and found 3 potential improvements: 1) Add input validation, 2) Use const instead of let for immutable variables, 3) Consider error handling...',
+    features: ['Automated Code Analysis', 'Bug Detection', 'Best Practices', 'Integration Support']
   },
   {
     id: '5',
     name: 'Social Media Manager',
     description: 'Comprehensive social media management tool with content scheduling, hashtag optimization, and analytics.',
+    fullDescription: 'Social Media Manager automates your social media presence with intelligent content scheduling, hashtag optimization, and performance analytics across multiple platforms.',
     price: '$25/month',
     category: 'content',
     views: 2890,
@@ -73,12 +90,16 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=225',
     hasFreeTrial: true,
     integrations: ['API', 'Zapier'],
-    isReadyToLaunch: true
+    isReadyToLaunch: true,
+    demoMessage: 'Create a social media post about productivity',
+    sampleResponse: '🚀 Boost your productivity with these 5 simple tips: 1) Time-block your schedule, 2) Use the 2-minute rule, 3) Batch similar tasks... #ProductivityHacks #WorkSmart',
+    features: ['Content Scheduling', 'Hashtag Optimization', 'Multi-platform Support', 'Analytics Dashboard']
   },
   {
     id: '6',
     name: 'Email Marketing Optimizer',
     description: 'AI agent that optimizes email campaigns, personalizes content, and improves open rates.',
+    fullDescription: 'Email Marketing Optimizer uses advanced AI to personalize email campaigns, optimize send times, and improve engagement rates through intelligent content suggestions and A/B testing.',
     price: '$39/month',
     category: 'writing',
     views: 1567,
@@ -88,7 +109,10 @@ export const agents = [
     thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225',
     hasFreeTrial: true,
     integrations: ['API', 'Email', 'Webhooks'],
-    isReadyToLaunch: true
+    isReadyToLaunch: true,
+    demoMessage: 'Optimize this email subject line',
+    sampleResponse: 'I\'ve analyzed your subject line and suggest these improvements: 1) Add urgency with "Limited Time", 2) Personalize with recipient name, 3) Include benefit-focused language...',
+    features: ['Email Personalization', 'A/B Testing', 'Send Time Optimization', 'Performance Analytics']
   }
 ];
 
@@ -111,3 +135,46 @@ export const mockDeveloper = {
   totalEarnings: '$2,840',
   monthlyEarnings: '$420'
 };
+
+export const userPurchases = [
+  {
+    id: '1',
+    name: 'Content Creator Pro',
+    description: 'AI-powered content generation tool',
+    purchaseDate: '2024-01-15',
+    status: 'active',
+    usage: 1247
+  },
+  {
+    id: '3',
+    name: 'Customer Support Assistant',
+    description: 'Intelligent chatbot for customer service',
+    purchaseDate: '2024-01-10',
+    status: 'active',
+    usage: 856
+  }
+];
+
+export const paymentHistory = [
+  {
+    id: '1',
+    date: '2024-01-15',
+    agentName: 'Content Creator Pro',
+    amount: '$29.00',
+    status: 'completed'
+  },
+  {
+    id: '2',
+    date: '2024-01-10',
+    agentName: 'Customer Support Assistant',
+    amount: '$19.00',
+    status: 'completed'
+  },
+  {
+    id: '3',
+    date: '2023-12-28',
+    agentName: 'Data Analytics Bot',
+    amount: '$45.00',
+    status: 'refunded'
+  }
+];
