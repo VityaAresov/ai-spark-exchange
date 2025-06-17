@@ -1,238 +1,230 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { developerAgents } from '@/data/mockData';
-import { toast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PlusCircle, TrendingUp, Users, DollarSign, Eye } from 'lucide-react';
+import Header from '@/components/Header';
+import SellerOnboardingForm from '@/components/SellerOnboardingForm';
+import { agents, mockDeveloper } from '@/data/mockData';
 
 const DeveloperDashboard = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    fullDescription: ''
-  });
+  const [user] = useState(mockDeveloper);
+  const [showOnboardingForm, setShowOnboardingForm] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Agent Submitted!",
-      description: "Your agent has been submitted for review. It will be live within 24 hours.",
-    });
-    setFormData({
-      name: '',
-      description: '',
-      price: '',
-      category: '',
-      fullDescription: ''
-    });
-  };
+  const myAgents = agents.filter(agent => user.publishedAgents.includes(agent.id));
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const totalViews = myAgents.reduce((sum, agent) => sum + agent.views, 0);
+  const totalPurchases = myAgents.reduce((sum, agent) => sum + agent.purchases, 0);
+  const averageRating = myAgents.reduce((sum, agent) => sum + (agent.rating || 0), 0) / myAgents.length;
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
+      
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Developer Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage your AI agents and track performance</p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Developer Dashboard</h1>
+            <p className="text-gray-600">Manage your AI agents and track performance</p>
+          </div>
+          <Button 
+            onClick={() => setShowOnboardingForm(!showOnboardingForm)}
+            className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+          >
+            <PlusCircle className="h-4 w-4" />
+            {showOnboardingForm ? 'View Dashboard' : 'Submit New Agent'}
+          </Button>
         </div>
 
-        <Tabs defaultValue="submit" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="submit">Submit Agent</TabsTrigger>
-            <TabsTrigger value="agents">My Agents</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
+        {showOnboardingForm ? (
+          <SellerOnboardingForm />
+        ) : (
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="agents">My Agents</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="submit">
-            <Card>
-              <CardHeader>
-                <CardTitle>Submit New Agent</CardTitle>
-                <CardDescription>Add a new AI agent to the marketplace</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Agent Name</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                        placeholder="e.g., GrammarBot"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="price">Price</Label>
-                      <Input
-                        id="price"
-                        value={formData.price}
-                        onChange={(e) => handleInputChange('price', e.target.value)}
-                        placeholder="e.g., $5/month"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select onValueChange={(value) => handleInputChange('category', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="writing">Writing</SelectItem>
-                        <SelectItem value="analytics">Analytics</SelectItem>
-                        <SelectItem value="content">Content Generation</SelectItem>
-                        <SelectItem value="productivity">Productivity</SelectItem>
-                        <SelectItem value="customer-service">Customer Service</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Short Description</Label>
-                    <Input
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      placeholder="Brief description of what your agent does"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="fullDescription">Detailed Description</Label>
-                    <Textarea
-                      id="fullDescription"
-                      value={formData.fullDescription}
-                      onChange={(e) => handleInputChange('fullDescription', e.target.value)}
-                      placeholder="Provide a detailed description of your agent's capabilities..."
-                      rows={4}
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                    Submit Agent for Review
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="agents">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {developerAgents.map((agent) => (
-                <Card key={agent.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{agent.name}</CardTitle>
-                      <Badge variant={agent.status === 'live' ? 'default' : agent.status === 'pending' ? 'secondary' : 'destructive'}>
-                        {agent.status}
-                      </Badge>
-                    </div>
-                    <CardDescription>{agent.description}</CardDescription>
+            <TabsContent value="overview" className="space-y-6">
+              {/* Stats Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Agents</CardTitle>
+                    <PlusCircle className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Views:</span>
-                        <span className="font-semibold">{agent.views}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Purchases:</span>
-                        <span className="font-semibold">{agent.purchases}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Revenue:</span>
-                        <span className="font-semibold">{agent.revenue}</span>
-                      </div>
-                    </div>
-                    <Button className="w-full mt-4" variant="outline">
-                      Edit Agent
-                    </Button>
+                    <div className="text-2xl font-bold">{myAgents.length}</div>
+                    <p className="text-xs text-muted-foreground">Active listings</p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </TabsContent>
 
-          <TabsContent value="analytics">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Views</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">2,847</div>
-                  <p className="text-xs text-green-600">+12% from last month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">156</div>
-                  <p className="text-xs text-green-600">+8% from last month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$1,248</div>
-                  <p className="text-xs text-green-600">+15% from last month</p>
-                </CardContent>
-              </Card>
-            </div>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{totalViews.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">+12% from last month</p>
+                  </CardContent>
+                </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Agent Performance</CardTitle>
-                <CardDescription>Detailed breakdown of your agents' performance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Agent</TableHead>
-                      <TableHead>Views</TableHead>
-                      <TableHead>Purchases</TableHead>
-                      <TableHead>Conversion Rate</TableHead>
-                      <TableHead>Revenue</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {developerAgents.map((agent) => (
-                      <TableRow key={agent.id}>
-                        <TableCell className="font-medium">{agent.name}</TableCell>
-                        <TableCell>{agent.views}</TableCell>
-                        <TableCell>{agent.purchases}</TableCell>
-                        <TableCell>{((agent.purchases / agent.views) * 100).toFixed(1)}%</TableCell>
-                        <TableCell>{agent.revenue}</TableCell>
-                      </TableRow>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{totalPurchases}</div>
+                    <p className="text-xs text-muted-foreground">+8% from last month</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Avg. Rating</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{averageRating.toFixed(1)}★</div>
+                    <p className="text-xs text-muted-foreground">Across all agents</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Performance */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Performance</CardTitle>
+                  <CardDescription>Your agents' performance in the last 30 days</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {myAgents.map((agent) => (
+                      <div key={agent.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            🤖
+                          </div>
+                          <div>
+                            <h3 className="font-medium">{agent.name}</h3>
+                            <p className="text-sm text-gray-500">{agent.category}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium">{agent.purchases} sales</div>
+                          <div className="text-xs text-gray-500">{agent.views} views</div>
+                        </div>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="agents" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {myAgents.map((agent) => (
+                  <Card key={agent.id}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg">{agent.name}</CardTitle>
+                        <Badge variant="secondary">{agent.price}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600 mb-4">{agent.description.substring(0, 100)}...</p>
+                      <div className="flex justify-between text-sm">
+                        <span>{agent.views} views</span>
+                        <span>{agent.purchases} purchases</span>
+                      </div>
+                      <div className="mt-4 flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1">
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1">
+                          Analytics
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="analytics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Analytics Dashboard</CardTitle>
+                  <CardDescription>Detailed performance metrics for your agents</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Advanced Analytics</h3>
+                    <p className="text-gray-500 mb-4">
+                      DAU/MAU graphs, feature heatmaps, and ROI calculators coming soon
+                    </p>
+                    <Badge variant="outline">Feature in Development</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="earnings" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5" />
+                      Total Earnings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-green-600">{user.totalEarnings}</div>
+                    <p className="text-sm text-gray-500">All time revenue</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>This Month</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold">{user.monthlyEarnings}</div>
+                    <p className="text-sm text-gray-500">+15% from last month</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Revenue Split</CardTitle>
+                  <CardDescription>
+                    You keep 80% of each sale, platform takes 20%
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+                      <span className="font-medium">Your Share (80%)</span>
+                      <span className="font-bold text-green-600">$2,272</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                      <span className="font-medium">Platform Fee (20%)</span>
+                      <span className="font-bold text-gray-600">$568</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </div>
   );

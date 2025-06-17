@@ -4,18 +4,22 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, TrendingUp, Star, Users } from 'lucide-react';
-import AgentCard from '@/components/AgentCard';
+import { Search, TrendingUp, Star } from 'lucide-react';
+import EnhancedAgentCard from '@/components/EnhancedAgentCard';
+import FilterSidebar from '@/components/FilterSidebar';
 import Header from '@/components/Header';
 import { agents } from '@/data/mockData';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [priceFilter, setPriceFilter] = useState('all');
-
-  const categories = ['all', 'writing', 'analytics', 'content', 'productivity', 'customer-service'];
+  const [sortBy, setSortBy] = useState('popularity');
+  const [filters, setFilters] = useState({
+    categories: [] as string[],
+    priceRange: [0, 500] as number[],
+    minRating: 0,
+    integrations: { api: false, webhooks: false, zapier: false },
+    readyToLaunch: false
+  });
 
   // Mock trending agents (sorted by recent sales growth)
   const trendingAgents = useMemo(() => {
@@ -24,35 +28,73 @@ const Index = () => {
       .slice(0, 6);
   }, []);
 
-  // Mock personalized recommendations (based on mock user purchase history)
+  // Mock personalized recommendations
   const recommendedAgents = useMemo(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.email) return agents.slice(0, 3);
     
-    // Simple recommendation based on category preferences
-    return agents.filter(agent => agent.category === 'writing' || agent.category === 'content').slice(0, 3);
+    return agents.filter(agent => agent.category === 'content' || agent.category === 'writing').slice(0, 3);
   }, []);
 
   const filteredAgents = useMemo(() => {
-    return agents.filter(agent => {
+    let filtered = agents.filter(agent => {
+      // Search filter
       const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            agent.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || agent.category === selectedCategory;
       
-      let matchesPrice = true;
-      if (priceFilter === 'free') {
-        matchesPrice = agent.price.toLowerCase().includes('free');
-      } else if (priceFilter === 'under-10') {
-        const price = parseInt(agent.price.replace(/[^0-9]/g, ''));
-        matchesPrice = price < 10;
-      } else if (priceFilter === 'over-10') {
-        const price = parseInt(agent.price.replace(/[^0-9]/g, ''));
-        matchesPrice = price >= 10;
-      }
+      // Category filter
+      const matchesCategory = filters.categories.length === 0 || 
+                             filters.categories.some(cat => agent.category.includes(cat.toLowerCase().replace(' ', '-')));
       
-      return matchesSearch && matchesCategory && matchesPrice;
+      // Price filter
+      const agentPrice = parseInt(agent.price.replace(/[^0-9]/g, '')) || 0;
+      const matchesPrice = agentPrice >= filters.priceRange[0] && agentPrice <= filters.priceRange[1];
+      
+      // Rating filter
+      const matchesRating = !filters.minRating || (agent.rating && agent.rating >= filters.minRating);
+      
+      // Integration filter
+      const hasRequiredIntegrations = !Object.values(filters.integrations).some(Boolean) ||
+        (filters.integrations.api && agent.integrations?.includes('API')) ||
+        (filters.integrations.webhooks && agent.integrations?.includes('Webhooks')) ||
+        (filters.integrations.zapier && agent.integrations?.includes('Zapier'));
+      
+      // Ready to launch filter
+      const matchesReadyToLaunch = !filters.readyToLaunch || agent.isReadyToLaunch;
+      
+      return matchesSearch && matchesCategory && matchesPrice && matchesRating && 
+             hasRequiredIntegrations && matchesReadyToLaunch;
     });
-  }, [searchTerm, selectedCategory, priceFilter]);
+
+    // Sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => {
+          const priceA = parseInt(a.price.replace(/[^0-9]/g, '')) || 0;
+          const priceB = parseInt(b.price.replace(/[^0-9]/g, '')) || 0;
+          return priceA - priceB;
+        });
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => {
+          const priceA = parseInt(a.price.replace(/[^0-9]/g, '')) || 0;
+          const priceB = parseInt(b.price.replace(/[^0-9]/g, '')) || 0;
+          return priceB - priceA;
+        });
+        break;
+      case 'rating':
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      case 'newest':
+        // Mock newest first (reverse order)
+        filtered.reverse();
+        break;
+      default: // popularity
+        filtered.sort((a, b) => b.purchases - a.purchases);
+    }
+
+    return filtered;
+  }, [searchTerm, sortBy, filters]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,7 +138,7 @@ const Index = () => {
                     #{index + 1}
                   </Badge>
                 )}
-                <AgentCard agent={agent} />
+                <EnhancedAgentCard agent={agent} />
               </div>
             ))}
           </div>
@@ -112,119 +154,57 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recommendedAgents.map((agent) => (
-              <AgentCard key={agent.id} agent={agent} />
+              <EnhancedAgentCard key={agent.id} agent={agent} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Enhanced Filters Section */}
-      <section className="py-6 bg-white border-b">
+      {/* Main Catalog with Filters */}
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>
-                        {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Price</label>
-                <Select value={priceFilter} onValueChange={setPriceFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Prices</SelectItem>
-                    <SelectItem value="free">Free</SelectItem>
-                    <SelectItem value="under-10">Under $10</SelectItem>
-                    <SelectItem value="over-10">$10 and above</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">For Creators</label>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSelectedCategory('content')}
-                  className="w-48"
-                >
-                  Content Creator Tools
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">All AI Agents</h2>
+            <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">
                 {filteredAgents.length} agents found
               </span>
-              {(searchTerm || selectedCategory !== 'all' || priceFilter !== 'all') && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('all');
-                    setPriceFilter('all');
-                  }}
-                >
-                  Clear Filters
-                </Button>
-              )}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="popularity">Most Popular</SelectItem>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="rating">Highest Rated</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Main Agent Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">All AI Agents</h2>
-          {filteredAgents.length === 0 ? (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">No agents found</h3>
-              <p className="text-gray-500">Try adjusting your search criteria</p>
+          
+          <div className="flex gap-8">
+            {/* Filter Sidebar */}
+            <div className="hidden lg:block shrink-0">
+              <FilterSidebar onFiltersChange={setFilters} />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
+            
+            {/* Agent Grid */}
+            <div className="flex-1">
+              {filteredAgents.length === 0 ? (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No agents found</h3>
+                  <p className="text-gray-500">Try adjusting your search criteria or filters</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredAgents.map((agent) => (
+                    <EnhancedAgentCard key={agent.id} agent={agent} />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Browse by Category</h2>
-          <div className="flex flex-wrap gap-3 justify-center">
-            {categories.slice(1).map(category => {
-              const count = agents.filter(agent => agent.category === category).length;
-              return (
-                <Badge 
-                  key={category}
-                  variant="outline" 
-                  className="text-lg px-4 py-2 cursor-pointer hover:bg-blue-50 hover:border-blue-300"
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category.charAt(0).toUpperCase() + category.slice(1)} ({count})
-                </Badge>
-              );
-            })}
           </div>
         </div>
       </section>
