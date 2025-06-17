@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Sparkles } from 'lucide-react';
+import { Upload, Sparkles, CheckCircle } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const SellerOnboardingForm = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ const SellerOnboardingForm = () => {
     isReadyToLaunch: false
   });
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const categories = [
     'Content Generation',
@@ -58,12 +60,20 @@ const SellerOnboardingForm = () => {
     if (file) {
       // Validate file size (2MB max)
       if (file.size > 2 * 1024 * 1024) {
-        alert('File size must be less than 2MB');
+        toast({
+          title: "File too large",
+          description: "File size must be less than 2MB",
+          variant: "destructive"
+        });
         return;
       }
       // Validate file type
       if (!['image/png', 'image/jpeg', 'image/svg+xml'].includes(file.type)) {
-        alert('Only PNG, JPG, and SVG files are allowed');
+        toast({
+          title: "Invalid file type",
+          description: "Only PNG, JPG, and SVG files are allowed",
+          variant: "destructive"
+        });
         return;
       }
       setFormData(prev => ({ ...prev, thumbnail: file }));
@@ -72,7 +82,11 @@ const SellerOnboardingForm = () => {
 
   const generateDescription = async () => {
     if (!formData.name || !formData.category) {
-      alert('Please enter agent name and category first');
+      toast({
+        title: "Missing Information",
+        description: "Please enter agent name and category first",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -81,14 +95,19 @@ const SellerOnboardingForm = () => {
     // Mock AI description generation (in production, this would call GPT-4 API)
     setTimeout(() => {
       const mockDescriptions = [
-        `${formData.name} is a powerful AI agent designed for ${formData.category.toLowerCase()}. It streamlines workflows and delivers professional results with minimal setup required.`,
-        `Transform your ${formData.category.toLowerCase()} process with ${formData.name}. This intelligent agent automates complex tasks and provides actionable insights.`,
-        `${formData.name} revolutionizes ${formData.category.toLowerCase()} by combining advanced AI capabilities with user-friendly interfaces for maximum productivity.`
+        `${formData.name} is a powerful AI agent designed for ${formData.category.toLowerCase()}. It streamlines workflows, automates complex tasks, and delivers professional results with minimal setup required. Perfect for businesses looking to enhance productivity and efficiency.`,
+        `Transform your ${formData.category.toLowerCase()} process with ${formData.name}. This intelligent agent combines advanced AI capabilities with user-friendly interfaces to provide actionable insights, automate repetitive tasks, and boost overall performance.`,
+        `${formData.name} revolutionizes ${formData.category.toLowerCase()} by leveraging cutting-edge AI technology. It offers seamless integration, intelligent automation, and professional-grade results that help teams work smarter and achieve better outcomes faster.`
       ];
       
       const randomDescription = mockDescriptions[Math.floor(Math.random() * mockDescriptions.length)];
       setFormData(prev => ({ ...prev, description: randomDescription }));
       setIsGeneratingDescription(false);
+      
+      toast({
+        title: "Description Generated!",
+        description: "AI has created a description for your agent. Feel free to edit it as needed."
+      });
     }, 2000);
   };
 
@@ -97,26 +116,68 @@ const SellerOnboardingForm = () => {
     
     // Validation
     if (!formData.name || !formData.category || !formData.price || !formData.description) {
-      alert('Please fill in all required fields');
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
       return;
     }
 
     // Mock submission
     console.log('Submitting agent:', formData);
-    alert('Agent submitted successfully! It will be reviewed and published within 24 hours.');
+    setSubmitted(true);
     
-    // Reset form
-    setFormData({
-      name: '',
-      category: '',
-      price: '',
-      description: '',
-      thumbnail: null,
-      integrations: [],
-      hasFreeTrial: false,
-      isReadyToLaunch: false
+    toast({
+      title: "Agent Submitted Successfully!",
+      description: "Your agent will be reviewed and published within 24 hours."
     });
+    
+    // Reset form after delay
+    setTimeout(() => {
+      setFormData({
+        name: '',
+        category: '',
+        price: '',
+        description: '',
+        thumbnail: null,
+        integrations: [],
+        hasFreeTrial: false,
+        isReadyToLaunch: false
+      });
+      setSubmitted(false);
+    }, 3000);
   };
+
+  if (submitted) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center space-y-4">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+              <h2 className="text-2xl font-bold text-green-700">Agent Submitted!</h2>
+              <p className="text-gray-600">
+                Thank you for submitting your AI agent. Our team will review it within 24 hours.
+              </p>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-2">What happens next?</h3>
+                <ul className="text-sm text-gray-600 space-y-1 text-left">
+                  <li>• Quality review and testing (12-24 hours)</li>
+                  <li>• Email notification once approved</li>
+                  <li>• Agent goes live on the marketplace</li>
+                  <li>• You'll receive your unique license key</li>
+                </ul>
+              </div>
+              <p className="text-sm text-gray-500">
+                Contact support@example.com if you have any questions.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -187,7 +248,7 @@ const SellerOnboardingForm = () => {
                   variant="outline"
                   size="sm"
                   onClick={generateDescription}
-                  disabled={isGeneratingDescription}
+                  disabled={isGeneratingDescription || !formData.name || !formData.category}
                   className="flex items-center gap-2"
                 >
                   <Sparkles className="h-4 w-4" />
@@ -202,6 +263,9 @@ const SellerOnboardingForm = () => {
                 rows={4}
                 className="mt-1"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                AI generation requires agent name and category to be filled first
+              </p>
             </div>
 
             {/* Thumbnail Upload */}

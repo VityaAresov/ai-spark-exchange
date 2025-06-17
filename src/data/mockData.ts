@@ -1,4 +1,3 @@
-
 export const agents = [
   {
     id: '1',
@@ -17,7 +16,36 @@ export const agents = [
     isReadyToLaunch: true,
     demoMessage: 'Write a blog post about sustainable living',
     sampleResponse: 'Here\'s a comprehensive blog post about sustainable living that covers eco-friendly practices, renewable energy, and waste reduction strategies...',
-    features: ['AI Content Generation', 'SEO Optimization', 'Multi-format Support', 'Brand Voice Customization']
+    features: ['AI Content Generation', 'SEO Optimization', 'Multi-format Support', 'Brand Voice Customization'],
+    reviews: [
+      {
+        id: '1',
+        userId: 'user1',
+        userName: 'Ivan',
+        rating: 5,
+        comment: 'Great grammar corrections! Saves me hours of editing work.',
+        date: '2025-06-12',
+        verified: true
+      },
+      {
+        id: '2',
+        userId: 'user2',
+        userName: 'Anna',
+        rating: 4,
+        comment: 'Very helpful for content creation, though sometimes the suggestions could be more creative.',
+        date: '2025-06-10',
+        verified: true
+      },
+      {
+        id: '3',
+        userId: 'user3',
+        userName: 'Mike',
+        rating: 5,
+        comment: 'Excellent tool! The SEO optimization features are particularly impressive.',
+        date: '2025-06-08',
+        verified: false
+      }
+    ]
   },
   {
     id: '2',
@@ -36,7 +64,27 @@ export const agents = [
     isReadyToLaunch: true,
     demoMessage: 'Analyze sales data for trends',
     sampleResponse: 'Based on your sales data, I\'ve identified a 23% increase in revenue during Q3, with the highest performing product categories being...',
-    features: ['CSV Processing', 'Automated Reports', 'Data Visualization', 'Trend Analysis']
+    features: ['CSV Processing', 'Automated Reports', 'Data Visualization', 'Trend Analysis'],
+    reviews: [
+      {
+        id: '4',
+        userId: 'user4',
+        userName: 'Sarah',
+        rating: 4,
+        comment: 'Sometimes slow to respond, but the analysis quality is excellent.',
+        date: '2025-06-11',
+        verified: true
+      },
+      {
+        id: '5',
+        userId: 'user5',
+        userName: 'David',
+        rating: 5,
+        comment: 'Perfect for our monthly reports. Saves the team countless hours.',
+        date: '2025-06-09',
+        verified: true
+      }
+    ]
   },
   {
     id: '3',
@@ -55,7 +103,18 @@ export const agents = [
     isReadyToLaunch: true,
     demoMessage: 'I need help with my order',
     sampleResponse: 'I\'d be happy to help you with your order! Could you please provide your order number so I can look up the details and assist you better?',
-    features: ['24/7 Support', 'Ticket Routing', 'Multi-channel Integration', 'Sentiment Analysis']
+    features: ['24/7 Support', 'Ticket Routing', 'Multi-channel Integration', 'Sentiment Analysis'],
+    reviews: [
+      {
+        id: '6',
+        userId: 'user6',
+        userName: 'Lisa',
+        rating: 5,
+        comment: 'Outstanding customer service automation. Our response time improved dramatically.',
+        date: '2025-06-13',
+        verified: true
+      }
+    ]
   },
   {
     id: '4',
@@ -74,7 +133,18 @@ export const agents = [
     isReadyToLaunch: false,
     demoMessage: 'Review this JavaScript function',
     sampleResponse: 'I\'ve analyzed your code and found 3 potential improvements: 1) Add input validation, 2) Use const instead of let for immutable variables, 3) Consider error handling...',
-    features: ['Automated Code Analysis', 'Bug Detection', 'Best Practices', 'Integration Support']
+    features: ['Automated Code Analysis', 'Bug Detection', 'Best Practices', 'Integration Support'],
+    reviews: [
+      {
+        id: '7',
+        userId: 'user7',
+        userName: 'Tom',
+        rating: 4,
+        comment: 'Good for catching common issues, but needs improvement for complex patterns.',
+        date: '2025-06-07',
+        verified: true
+      }
+    ]
   },
   {
     id: '5',
@@ -93,7 +163,8 @@ export const agents = [
     isReadyToLaunch: true,
     demoMessage: 'Create a social media post about productivity',
     sampleResponse: '🚀 Boost your productivity with these 5 simple tips: 1) Time-block your schedule, 2) Use the 2-minute rule, 3) Batch similar tasks... #ProductivityHacks #WorkSmart',
-    features: ['Content Scheduling', 'Hashtag Optimization', 'Multi-platform Support', 'Analytics Dashboard']
+    features: ['Content Scheduling', 'Hashtag Optimization', 'Multi-platform Support', 'Analytics Dashboard'],
+    reviews: []
   },
   {
     id: '6',
@@ -112,7 +183,8 @@ export const agents = [
     isReadyToLaunch: true,
     demoMessage: 'Optimize this email subject line',
     sampleResponse: 'I\'ve analyzed your subject line and suggest these improvements: 1) Add urgency with "Limited Time", 2) Personalize with recipient name, 3) Include benefit-focused language...',
-    features: ['Email Personalization', 'A/B Testing', 'Send Time Optimization', 'Performance Analytics']
+    features: ['Email Personalization', 'A/B Testing', 'Send Time Optimization', 'Performance Analytics'],
+    reviews: []
   }
 ];
 
