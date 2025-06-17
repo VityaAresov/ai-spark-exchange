@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, TrendingUp, Star } from 'lucide-react';
+import { Search, TrendingUp, Star, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import EnhancedAgentCard from '@/components/EnhancedAgentCard';
 import FilterSidebar from '@/components/FilterSidebar';
 import Header from '@/components/Header';
@@ -100,24 +101,34 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Discover AI Agents for Every Need
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Connect with powerful AI assistants built by developers worldwide
-          </p>
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search for AI agents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12 text-lg"
-              />
+      {/* Marketplace Header */}
+      <section className="bg-white border-b py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-4 mb-6">
+            <Link to="/" className="inline-flex items-center text-blue-600 hover:text-blue-800">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Link>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              AI Agent Marketplace
+            </h1>
+            <p className="text-xl text-gray-600 mb-8">
+              Discover and deploy powerful AI agents for your business
+            </p>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search for AI agents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 text-lg"
+                />
+              </div>
             </div>
           </div>
         </div>
