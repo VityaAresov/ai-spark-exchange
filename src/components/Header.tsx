@@ -2,24 +2,30 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Search, 
   User, 
-  ShoppingCart, 
-  Bell, 
   Menu,
   X,
   Home,
   Store,
-  Code,
-  BarChart3
+  Plus,
+  LogOut,
+  UserCircle
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, userRole, signOut } = useAuth();
   
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMenuOpen(false);
+  };
+
+  const canAddProducts = userRole === 'seller' || userRole === 'admin';
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -38,38 +44,53 @@ const Header = () => {
               <Home className="h-4 w-4" />
               Home
             </Link>
-            <Link to="/marketplace" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+            <Link to="/catalog" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
               <Store className="h-4 w-4" />
-              Marketplace
+              Catalog
             </Link>
-            <Link to="/developer" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
-              <Code className="h-4 w-4" />
-              For Developers
-            </Link>
-            <Link to="/dashboard" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Dashboard
-            </Link>
+            {canAddProducts && (
+              <Link to="/add-product" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Product
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-            </Button>
-            <Link to="/auth">
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Sign In
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{user.email}</span>
+                  {userRole && (
+                    <Badge variant="outline" className="text-xs">
+                      {userRole}
+                    </Badge>
+                  )}
+                </div>
+                <Link to="/profile">
+                  <Button variant="ghost" size="icon">
+                    <UserCircle className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,41 +119,68 @@ const Header = () => {
                 </div>
               </Link>
               <Link 
-                to="/marketplace" 
+                to="/catalog" 
                 className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
-                  Marketplace
+                  Catalog
                 </div>
               </Link>
-              <Link 
-                to="/developer" 
-                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <div className="flex items-center gap-2">
-                  <Code className="h-4 w-4" />
-                  For Developers
-                </div>
-              </Link>
-              <Link 
-                to="/dashboard" 
-                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
-                </div>
-              </Link>
-              <div className="px-4 py-2">
-                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                    Sign In
-                  </Button>
+              {canAddProducts && (
+                <Link 
+                  to="/add-product" 
+                  className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Product
+                  </div>
                 </Link>
+              )}
+              
+              <div className="px-4 py-2">
+                {user ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <span>{user.email}</span>
+                      {userRole && (
+                        <Badge variant="outline" className="text-xs">
+                          {userRole}
+                        </Badge>
+                      )}
+                    </div>
+                    <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full justify-start">
+                        <UserCircle className="h-4 w-4 mr-2" />
+                        My Profile
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
