@@ -38,11 +38,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      console.log('Fetching user role for user:', session.user.id);
       const { data, error } = await supabase.rpc('get_my_role');
       if (error) {
         console.error('Error fetching user role:', error);
         setUserRole(null);
       } else {
+        console.log('User role fetched:', data);
         setUserRole(data);
       }
     } catch (error) {
@@ -52,21 +54,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
+    console.log('AuthProvider: Setting up auth state...');
+    
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email || 'no user');
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Refresh user role when auth state changes
+        // Defer role fetching to avoid deadlock
         if (session?.user) {
           setTimeout(() => {
             refreshUserRole();
@@ -77,47 +76,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    return () => subscription.unsubscribe();
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting initial session:', error);
+      } else {
+        console.log('Initial session:', session?.user?.email || 'no session');
+      }
+      
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
+      if (session?.user) {
+        setTimeout(() => {
+          refreshUserRole();
+        }, 100);
+      }
+    });
+
+    return () => {
+      console.log('AuthProvider: Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Refresh user role when session changes
-  useEffect(() => {
-    if (session?.user) {
-      refreshUserRole();
-    }
-  }, [session]);
-
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    console.log('Attempting sign in for:', email);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('Sign in error:', error);
+      } else {
+        console.log('Sign in successful');
+      }
+      
+      return { error };
+    } catch (err) {
+      console.error('Sign in exception:', err);
+      return { error: err };
+    }
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`
+    console.log('Attempting sign up for:', email);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        console.error('Sign up error:', error);
+      } else {
+        console.log('Sign up successful');
       }
-    });
-    return { error };
+      
+      return { error };
+    } catch (err) {
+      console.error('Sign up exception:', err);
+      return { error: err };
+    }
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
+    console.log('Attempting Google sign in...');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        console.error('Google sign in error:', error);
+      } else {
+        console.log('Google sign in initiated');
       }
-    });
-    return { error };
+      
+      return { error };
+    } catch (err) {
+      console.error('Google sign in exception:', err);
+      return { error: err };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    console.log('Signing out...');
+    try {
+      await supabase.auth.signOut();
+      console.log('Sign out successful');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const value = {

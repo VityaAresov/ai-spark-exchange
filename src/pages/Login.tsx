@@ -26,23 +26,33 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    const { error } = await signIn(loginData.email, loginData.password);
-    
-    if (error) {
+    try {
+      const { error } = await signIn(loginData.email, loginData.password);
+      
+      if (error) {
+        console.error('Login error:', error);
+        toast({
+          title: "Login Failed",
+          description: error.message || "Please check your credentials and try again.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Login Successful!",
+          description: "Welcome back to the AI Agent Marketplace.",
+        });
+        navigate(location.state?.from || '/');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
       toast({
         title: "Login Failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-    } else {
-      toast({
-        title: "Login Successful!",
-        description: "Welcome back to the AI Agent Marketplace.",
-      });
-      navigate(location.state?.from || '/');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -57,41 +67,74 @@ const Login = () => {
       return;
     }
 
-    setIsLoading(true);
-    
-    const { error } = await signUp(signupData.email, signupData.password);
-    
-    if (error) {
+    if (signupData.password.length < 6) {
       toast({
-        title: "Signup Failed",
-        description: error.message,
+        title: "Error",
+        description: "Password must be at least 6 characters long.",
         variant: "destructive"
       });
-    } else {
-      toast({
-        title: "Account Created!",
-        description: "Welcome to the AI Agent Marketplace. Please check your email to verify your account.",
-      });
-      navigate('/');
+      return;
     }
+
+    setIsLoading(true);
     
-    setIsLoading(false);
+    try {
+      const { error } = await signUp(signupData.email, signupData.password);
+      
+      if (error) {
+        console.error('Signup error:', error);
+        toast({
+          title: "Signup Failed",
+          description: error.message || "Please try again with different credentials.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Account Created!",
+          description: "Welcome to the AI Agent Marketplace. Please check your email to verify your account.",
+        });
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      toast({
+        title: "Signup Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     
-    const { error } = await signInWithGoogle();
-    
-    if (error) {
+    try {
+      console.log('Attempting Google sign in...');
+      const { error } = await signInWithGoogle();
+      
+      if (error) {
+        console.error('Google sign in error:', error);
+        toast({
+          title: "Google Sign In Failed",
+          description: error.message || "Please try again or use email/password.",
+          variant: "destructive"
+        });
+      } else {
+        console.log('Google sign in initiated successfully');
+        // The redirect will happen automatically
+      }
+    } catch (err) {
+      console.error('Google sign in error:', err);
       toast({
         title: "Google Sign In Failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -119,6 +162,7 @@ const Login = () => {
                     onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="Enter your email"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -130,6 +174,7 @@ const Login = () => {
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                     placeholder="Enter your password"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <Button 
@@ -153,6 +198,7 @@ const Login = () => {
                     onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="Enter your email"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -162,8 +208,10 @@ const Login = () => {
                     type="password"
                     value={signupData.password}
                     onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
-                    placeholder="Create a password"
+                    placeholder="Create a password (min 6 characters)"
                     required
+                    disabled={isLoading}
+                    minLength={6}
                   />
                 </div>
                 <div className="space-y-2">
@@ -175,6 +223,8 @@ const Login = () => {
                     onChange={(e) => setSignupData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                     placeholder="Confirm your password"
                     required
+                    disabled={isLoading}
+                    minLength={6}
                   />
                 </div>
                 <Button 
@@ -203,9 +253,10 @@ const Login = () => {
               onClick={handleGoogleSignIn}
               disabled={isLoading}
               className="w-full mt-4"
+              type="button"
             >
               <Chrome className="mr-2 h-4 w-4" />
-              Sign in with Google
+              {isLoading ? 'Signing in...' : 'Sign in with Google'}
             </Button>
           </div>
         </CardContent>
