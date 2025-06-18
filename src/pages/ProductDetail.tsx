@@ -37,10 +37,22 @@ const ProductDetail = () => {
 
   const fetchProduct = async () => {
     try {
+      // Convert string id to number
+      const productId = parseInt(id || '0', 10);
+      if (isNaN(productId)) {
+        console.error('Invalid product ID');
+        toast({
+          title: "Error",
+          description: "Invalid product ID.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('INFO')
         .select('*')
-        .eq('id', id)
+        .eq('id', productId)
         .single();
 
       if (error) {
