@@ -7,7 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-interface Product {
+// Use the actual database row type from Supabase
+type ProductInfo = {
   id: number;
   name: string | null;
   description: string | null;
@@ -16,10 +17,10 @@ interface Product {
   type: string;
   user_id: string | null;
   created_at: string | null;
-}
+};
 
 const Catalog = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
