@@ -9,15 +9,13 @@ import { toast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  category: string;
-  rating: number;
-  reviews: number;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  category: string | null;
   type: string;
-  vendor: string;
+  user_id: string | null;
+  created_at: string | null;
 }
 
 const Catalog = () => {
@@ -31,7 +29,7 @@ const Catalog = () => {
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
-        .from('"INFO"')
+        .from('INFO')
         .select('*')
         .eq('status', 'active');
 
@@ -57,10 +55,11 @@ const Catalog = () => {
     }
   };
 
-  const formatPrice = (price: number, currency: string = 'USD') => {
+  const formatPrice = (price: number | null) => {
+    if (!price) return 'Free';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: 'USD',
       minimumFractionDigits: 0,
     }).format(price / 100);
   };
@@ -112,29 +111,19 @@ const Catalog = () => {
               <Card className="h-full hover:shadow-lg transition-shadow duration-200 cursor-pointer">
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{product.name}</CardTitle>
+                    <CardTitle className="text-xl">{product.name || 'Untitled'}</CardTitle>
                     <Badge variant="secondary" className="font-semibold">
-                      {formatPrice(product.price, product.currency)}
+                      {formatPrice(product.price)}
                     </Badge>
                   </div>
                   <CardDescription className="text-gray-600 line-clamp-2">
-                    {product.description}
+                    {product.description || 'No description available'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
-                    <Badge variant="outline">{product.category}</Badge>
-                    {product.rating && (
-                      <div className="text-sm text-gray-500">
-                        ⭐ {product.rating.toFixed(1)} ({product.reviews} reviews)
-                      </div>
-                    )}
+                    <Badge variant="outline">{product.category || 'General'}</Badge>
                   </div>
-                  {product.vendor && (
-                    <div className="text-sm text-gray-500">
-                      by {product.vendor}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </Link>

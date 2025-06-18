@@ -21,11 +21,7 @@ const AddProduct = () => {
     name: '',
     description: '',
     price: '',
-    currency: 'USD',
     category: '',
-    vendor: '',
-    demo_url: '',
-    integration: '',
     type: 'agent'
   });
 
@@ -99,18 +95,14 @@ const AddProduct = () => {
         name: formData.name,
         description: formData.description,
         price: priceInCents,
-        currency: formData.currency,
         category: formData.category,
-        vendor: formData.vendor || null,
-        demo_url: formData.demo_url || null,
-        integration: formData.integration || null,
         type: formData.type,
         user_id: user.id,
         status: 'active'
       };
 
       const { data, error } = await supabase
-        .from('"INFO"')
+        .from('INFO')
         .insert(productData)
         .select()
         .single();
@@ -232,51 +224,18 @@ const AddProduct = () => {
               </div>
 
               <div>
-                <Label htmlFor="vendor">Vendor/Company</Label>
-                <Input
-                  id="vendor"
-                  value={formData.vendor}
-                  onChange={(e) => handleInputChange('vendor', e.target.value)}
-                  placeholder="Your company name"
-                />
+                <Label htmlFor="type">Product Type</Label>
+                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agent">AI Agent</SelectItem>
+                    <SelectItem value="tool">AI Tool</SelectItem>
+                    <SelectItem value="service">AI Service</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="demo_url">Demo URL</Label>
-                <Input
-                  id="demo_url"
-                  type="url"
-                  value={formData.demo_url}
-                  onChange={(e) => handleInputChange('demo_url', e.target.value)}
-                  placeholder="https://demo.example.com"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="integration">Integration</Label>
-                <Input
-                  id="integration"
-                  value={formData.integration}
-                  onChange={(e) => handleInputChange('integration', e.target.value)}
-                  placeholder="API, Webhook, etc."
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="type">Product Type</Label>
-              <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="agent">AI Agent</SelectItem>
-                  <SelectItem value="tool">AI Tool</SelectItem>
-                  <SelectItem value="service">AI Service</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="flex gap-4">

@@ -12,19 +12,13 @@ import { toast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  category: string;
-  rating: number;
-  reviews: number;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  category: string | null;
   type: string;
-  vendor: string;
-  user_id: string;
-  demo_url: string;
-  integration: string;
-  created_at: string;
+  user_id: string | null;
+  created_at: string | null;
 }
 
 const ProductDetail = () => {
@@ -44,7 +38,7 @@ const ProductDetail = () => {
   const fetchProduct = async () => {
     try {
       const { data, error } = await supabase
-        .from('"INFO"')
+        .from('INFO')
         .select('*')
         .eq('id', id)
         .single();
@@ -85,7 +79,7 @@ const ProductDetail = () => {
     
     try {
       const { error } = await supabase
-        .from('"INFO"')
+        .from('INFO')
         .delete()
         .eq('id', product.id);
 
@@ -113,10 +107,11 @@ const ProductDetail = () => {
     }
   };
 
-  const formatPrice = (price: number, currency: string = 'USD') => {
+  const formatPrice = (price: number | null) => {
+    if (!price) return 'Free';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency: 'USD',
       minimumFractionDigits: 0,
     }).format(price / 100);
   };
@@ -171,13 +166,6 @@ const ProductDetail = () => {
               <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-gray-500">Product Preview</span>
               </div>
-              {product.demo_url && (
-                <Button variant="outline" className="w-full" asChild>
-                  <a href={product.demo_url} target="_blank" rel="noopener noreferrer">
-                    View Demo
-                  </a>
-                </Button>
-              )}
             </CardContent>
           </Card>
         </div>
@@ -185,7 +173,7 @@ const ProductDetail = () => {
         <div className="space-y-6">
           <div>
             <div className="flex items-start justify-between mb-4">
-              <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{product.name || 'Untitled'}</h1>
               <div className="flex gap-2">
                 {canEditProduct() && (
                   <>
@@ -211,33 +199,16 @@ const ProductDetail = () => {
             
             <div className="flex items-center gap-4 mb-4">
               <Badge variant="secondary" className="text-lg font-semibold px-3 py-1">
-                {formatPrice(product.price, product.currency)}
+                {formatPrice(product.price)}
               </Badge>
-              <Badge variant="outline">{product.category}</Badge>
-              {product.rating && (
-                <div className="text-sm text-gray-500">
-                  ⭐ {product.rating.toFixed(1)} ({product.reviews} reviews)
-                </div>
-              )}
+              <Badge variant="outline">{product.category || 'General'}</Badge>
             </div>
 
             <p className="text-gray-700 text-lg leading-relaxed mb-6">
-              {product.description}
+              {product.description || 'No description available'}
             </p>
 
             <div className="space-y-3">
-              {product.vendor && (
-                <div>
-                  <span className="font-medium text-gray-700">Vendor: </span>
-                  <span className="text-gray-600">{product.vendor}</span>
-                </div>
-              )}
-              {product.integration && (
-                <div>
-                  <span className="font-medium text-gray-700">Integration: </span>
-                  <span className="text-gray-600">{product.integration}</span>
-                </div>
-              )}
               <div>
                 <span className="font-medium text-gray-700">Type: </span>
                 <span className="text-gray-600">{product.type}</span>
@@ -245,7 +216,7 @@ const ProductDetail = () => {
               <div>
                 <span className="font-medium text-gray-700">Added: </span>
                 <span className="text-gray-600">
-                  {new Date(product.created_at).toLocaleDateString()}
+                  {product.created_at ? new Date(product.created_at).toLocaleDateString() : 'Unknown'}
                 </span>
               </div>
             </div>
@@ -253,7 +224,7 @@ const ProductDetail = () => {
 
           <div className="space-y-3">
             <Button className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-              Purchase Agent - {formatPrice(product.price, product.currency)}
+              Purchase Agent - {formatPrice(product.price)}
             </Button>
             <Button variant="outline" className="w-full" size="lg">
               Try Free Demo
