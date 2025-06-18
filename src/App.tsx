@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +13,6 @@ import Catalog from "./pages/Catalog";
 import ProductDetail from "./pages/ProductDetail";
 import Profile from "./pages/Profile";
 import AddProduct from "./pages/AddProduct";
-import Index from "./pages/Index";
 import AgentDetails from "./pages/AgentDetails";
 import Dashboard from "./pages/Dashboard";
 import DeveloperDashboard from "./pages/DeveloperDashboard";
@@ -34,6 +34,7 @@ const App = () => (
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/catalog" element={<Catalog />} />
+              <Route path="/marketplace" element={<Catalog />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route 
                 path="/profile" 
@@ -51,7 +52,6 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
-              <Route path="/marketplace" element={<Index />} />
               <Route path="/agent/:id" element={<AgentDetails />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/developer" element={<DeveloperDashboard />} />

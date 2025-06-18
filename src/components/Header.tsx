@@ -40,16 +40,16 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+            <Link to="/" className="text-gray-600 hover:text-blue-600 flex items-center gap-2 transition-colors">
               <Home className="h-4 w-4" />
               Home
             </Link>
-            <Link to="/catalog" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+            <Link to="/catalog" className="text-gray-600 hover:text-blue-600 flex items-center gap-2 transition-colors">
               <Store className="h-4 w-4" />
-              Catalog
+              Marketplace
             </Link>
             {canAddProducts && (
-              <Link to="/add-product" className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+              <Link to="/add-product" className="text-gray-600 hover:text-blue-600 flex items-center gap-2 transition-colors">
                 <Plus className="h-4 w-4" />
                 Add Product
               </Link>
@@ -79,12 +79,12 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/login">
+                <Link to="/auth">
                   <Button variant="ghost">
                     Sign In
                   </Button>
                 </Link>
-                <Link to="/login">
+                <Link to="/auth">
                   <Button className="bg-blue-600 hover:bg-blue-700">
                     Sign Up
                   </Button>
@@ -110,7 +110,7 @@ const Header = () => {
             <nav className="py-4 space-y-2">
               <Link 
                 to="/" 
-                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="flex items-center gap-2">
@@ -120,18 +120,18 @@ const Header = () => {
               </Link>
               <Link 
                 to="/catalog" 
-                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
+                className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
-                  Catalog
+                  Marketplace
                 </div>
               </Link>
               {canAddProducts && (
                 <Link 
                   to="/add-product" 
-                  className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
+                  className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <div className="flex items-center gap-2">
@@ -169,12 +169,12 @@ const Header = () => {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="outline" className="w-full">
                         Sign In
                       </Button>
                     </Link>
-                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                       <Button className="w-full bg-blue-600 hover:bg-blue-700">
                         Sign Up
                       </Button>
